@@ -1,16 +1,15 @@
 package com.hhplu.hhpluscleanarch.lecture.application.Integration;
 
 import com.hhplu.hhpluscleanarch.lecture.application.UserService;
-import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserHistoryResponse;
+import com.hhplu.hhpluscleanarch.lecture.domain.dto.LectureHistoryWithLecture;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
@@ -26,12 +25,11 @@ class UserServiceIntegrationTest {
         Long userId = 1L;
 
         // When
-        ResponseEntity<List<UserHistoryResponse>> response = userService.getApplyStatus(userId);
+        List<LectureHistoryWithLecture> applyStatus = userService.getApplyStatus(userId);
 
         // Then
-        assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
-
+        assertNotNull(applyStatus);
+        assertFalse(applyStatus.isEmpty());
     }
 
 }

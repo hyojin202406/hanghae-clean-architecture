@@ -51,28 +51,28 @@ class LectureHistoryServiceTest {
 
         Lecture lecture = new Lecture();
         lecture.setId(lectureId);
+        lecture.setCapacity(10);
 
-        LectureHistory lectureHistory = new LectureHistory();
-        lectureHistory.setUserId(userId);
-        lectureHistory.setLectureId(lectureId);
-        lectureHistory.setAppliedAt(LocalDateTime.now());
-        lectureHistory.setHistoryStatus(HistoryStatus.SUCCESS);
+        LectureHistory history = new LectureHistory();
+        history.setUserId(userId);
+        history.setLectureId(lectureId);
+        history.setAppliedAt(LocalDateTime.now());
+        history.setHistoryStatus(HistoryStatus.SUCCESS);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(lectureRepository.findById(lectureId)).thenReturn(Optional.of(lecture));
-        when(lectureHistoryRepository.countByLectureIdAndHistoryStatus(lectureId, HistoryStatus.SUCCESS)).thenReturn(10L);
-        when(lectureHistoryRepository.save(any(LectureHistory.class))).thenReturn(lectureHistory);
+        when(lectureHistoryRepository.save(any(LectureHistory.class))).thenReturn(history);
 
         LectureRequest request = new LectureRequest(userId, lectureId);
 
         // When
-        ResponseEntity<ApplyResponse> response = lectureHistoryService.apply(request);
+        LectureHistory lectureHistory = lectureHistoryService.apply(request);
 
         // Then
-        assertNotNull(response);
-        assertEquals(lectureId, response.getBody().getLectureId());
-        assertEquals(userId, response.getBody().getUserId());
-        assertEquals(HistoryStatus.SUCCESS, response.getBody().getStatus());
+        assertNotNull(lectureHistory);
+        assertEquals(lectureId, lectureHistory.getLectureId());
+        assertEquals(userId, lectureHistory.getUserId());
+        assertEquals(HistoryStatus.SUCCESS, lectureHistory.getHistoryStatus());
     }
 
     @Test
@@ -94,13 +94,13 @@ class LectureHistoryServiceTest {
         LectureRequest request = new LectureRequest(userId, lectureId);
 
         // When
-        ResponseEntity<ApplyResponse> response = lectureHistoryService.apply(request);
+        LectureHistory lectureHistory = lectureHistoryService.apply(request);
 
         // Then
-        assertNotNull(response);
-        assertEquals(lectureId, response.getBody().getLectureId());
-        assertEquals(userId, response.getBody().getUserId());
-        assertEquals(HistoryStatus.FAIL, response.getBody().getStatus());
+        assertNotNull(lectureHistory);
+        assertEquals(lectureId, lectureHistory.getLectureId());
+        assertEquals(userId, lectureHistory.getUserId());
+        assertEquals(HistoryStatus.FAIL, lectureHistory.getHistoryStatus());
     }
 
 }

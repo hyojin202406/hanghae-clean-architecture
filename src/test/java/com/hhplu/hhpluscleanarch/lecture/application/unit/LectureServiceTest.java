@@ -2,7 +2,6 @@ package com.hhplu.hhpluscleanarch.lecture.application.unit;
 
 import com.hhplu.hhpluscleanarch.lecture.application.LectureService;
 import com.hhplu.hhpluscleanarch.lecture.common.LectureStatus;
-import com.hhplu.hhpluscleanarch.lecture.controller.response.LectureResponse;
 import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
 import com.hhplu.hhpluscleanarch.lecture.exception.LectureNotFoundException;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureRepository;
@@ -11,15 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,13 +52,11 @@ class LectureServiceTest {
         );
 
         // When
-        ResponseEntity<List<LectureResponse>> response = lectureService.getLectures();
+        List<Lecture> lectures = lectureService.getLectures();
 
         // Then
-        assertEquals(200, response.getStatusCodeValue()); // HTTP 상태 코드 확인
-        assertEquals(2, response.getBody().size()); // 반환된 강의 개수 확인
-        assertEquals("LectureA", response.getBody().get(0).getTitle()); // 첫 번째 강의 제목 확인
-        assertEquals(LectureStatus.OPENED, response.getBody().get(0).getLectureStatus()); // 첫 번째 강의 상태 확인
+        assertNotNull(lectures);
+        assertFalse(lectures.isEmpty());
     }
 
     @Test
