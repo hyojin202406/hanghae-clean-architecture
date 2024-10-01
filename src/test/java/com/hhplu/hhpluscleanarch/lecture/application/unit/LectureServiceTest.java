@@ -50,7 +50,7 @@ class LectureServiceTest {
         lectureEntity2.setCreatedAt(LocalDateTime.of(2024,9,1,11,10));
         lectureEntity2.setLectureStatus(LectureStatus.CLOSED);
 
-        when(lectureRepository.findAvailableLectures()).thenReturn(
+        when(lectureRepository.findByCapacityLessThanAndLectureStatus(30, LectureStatus.OPENED)).thenReturn(
                 Arrays.asList(lectureEntity1, lectureEntity2)
         );
 
@@ -67,7 +67,7 @@ class LectureServiceTest {
     @Test
     void 신청_가능한_특강이_없을경우_예외처리() {
         // Given
-        when(lectureRepository.findAvailableLectures()).thenReturn(Collections.emptyList()); // 빈 리스트로 반환
+        when(lectureRepository.findByCapacityLessThanAndLectureStatus(30, LectureStatus.OPENED)).thenReturn(Collections.emptyList()); // 빈 리스트로 반환
 
         // When
         LectureNotFoundException exception = assertThrows(LectureNotFoundException.class, () -> lectureService.getLectures());
