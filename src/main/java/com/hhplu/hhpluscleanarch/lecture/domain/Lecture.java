@@ -1,6 +1,7 @@
 package com.hhplu.hhpluscleanarch.lecture.domain;
 
 import com.hhplu.hhpluscleanarch.lecture.common.LectureStatus;
+import com.hhplu.hhpluscleanarch.lecture.exception.CapacityFullException;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "lecture")
 public class Lecture {
+
+    private static final int MAX_CAPACITY = 30;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +33,17 @@ public class Lecture {
     @Column(name = "lecture_status", nullable = false)
     @Enumerated(EnumType.STRING) // Enum 타입으로 저장하기 위해 추가
     private LectureStatus lectureStatus;
+
+    public boolean isCapacityFull() {
+        return this.capacity >= MAX_CAPACITY;
+    }
+
+    // 수강 인원을 추가하는 메서드
+    public void addStudent() {
+        if (isCapacityFull()) {
+            throw new CapacityFullException("수강 인원이 가득 찼습니다.");
+        }
+        this.capacity++;
+    }
+
 }
