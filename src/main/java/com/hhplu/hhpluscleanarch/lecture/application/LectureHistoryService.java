@@ -37,7 +37,7 @@ public class LectureHistoryService {
      * @return
      */
     @Transactional
-    public ResponseEntity<ApplyResponse> apply(LectureRequest request) {
+    public LectureHistory apply(LectureRequest request) {
         Long userId = request.getUserId();
         Long lectureId = request.getLectureId();
 
@@ -59,10 +59,7 @@ public class LectureHistoryService {
         // 신청 기록 저장
         lectureHistoryRepository.save(lectureHistory);
 
-        // ApplyResponse 생성
-        ApplyResponse response = lectureHistory.toApplyResponse();
-
-        return ResponseEntity.ok(response);
+        return lectureHistory;
     }
 
 }

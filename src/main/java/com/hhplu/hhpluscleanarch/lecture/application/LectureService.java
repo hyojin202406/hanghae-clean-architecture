@@ -24,7 +24,7 @@ public class LectureService {
      * 날짜별로 현재 신청 가능한 특강 목록을 조회하는 API
      * @return
      */
-    public ResponseEntity<List<LectureResponse>> getLectures() {
+    public List<Lecture> getLectures() {
         // 강의 목록 조회
         List<Lecture> lectures = lectureRepository.findByCapacityLessThanAndLectureStatus(30, LectureStatus.OPENED);
 
@@ -32,17 +32,7 @@ public class LectureService {
             throw new LectureNotFoundException("Lecture not found");
         }
 
-        // Lecture 엔티티를 LectureResponse로 변환
-        List<LectureResponse> lectureResponses = lectures.stream()
-                .map(lecture -> new LectureResponse(
-                        lecture.getId(),
-                        lecture.getTitle(),
-                        lecture.getLecturerName(),
-                        lecture.getCapacity(),
-                        lecture.getLectureStatus()))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(lectureResponses);
+        return lectures;
     }
 
 }

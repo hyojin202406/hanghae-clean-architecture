@@ -6,11 +6,15 @@ import com.hhplu.hhpluscleanarch.lecture.application.UserService;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.controller.response.ApplyResponse;
 import com.hhplu.hhpluscleanarch.lecture.controller.response.LectureResponse;
-import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserHistoryResponse;
+import com.hhplu.hhpluscleanarch.lecture.controller.response.UserHistoryResponse;
+import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
+import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
+import com.hhplu.hhpluscleanarch.lecture.domain.dto.LectureHistoryWithLecture;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lectures")
@@ -37,7 +41,9 @@ public class LectureController {
      */
     @PostMapping("/apply")
     public ResponseEntity<ApplyResponse> apply(@RequestBody LectureRequest request) {
-        return lectureHistoryService.apply(request);
+        LectureHistory lectureHistory = lectureHistoryService.apply(request);
+        ApplyResponse response = lectureHistory.toApplyResponse();
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -48,7 +54,13 @@ public class LectureController {
      */
     @GetMapping
     public ResponseEntity<List<LectureResponse>> getLectures() {
-        return lectureService.getLectures();
+        List<Lecture> lectures = lectureService.getLectures();
+
+        List<LectureResponse> lectureResponses = lectures.stream()
+                .map(Lecture::toLectureResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(lectureResponses);
     }
 
     /**
@@ -60,7 +72,13 @@ public class LectureController {
      */
     @GetMapping("/application/{userId}")
     public ResponseEntity<List<UserHistoryResponse>> getApplyStatus(@PathVariable Long userId) {
-        return userService.getApplyStatus(userId);
+        List<LectureHistoryWithLecture> histories = userService.getApplyStatus(userId);
+
+        List<UserHistoryResponse> userHistoryResponses = histories.stream()
+                .map(LectureHistoryWithLecture::toUserHistoryResponse)
+                .toList();
+
+        return ResponseEntity.ok(userHistoryResponses);
     }
 
 }

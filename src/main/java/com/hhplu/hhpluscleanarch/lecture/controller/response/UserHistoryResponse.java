@@ -1,4 +1,4 @@
-package com.hhplu.hhpluscleanarch.lecture.infrastructure;
+package com.hhplu.hhpluscleanarch.lecture.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

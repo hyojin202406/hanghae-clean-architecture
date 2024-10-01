@@ -1,15 +1,18 @@
 package com.hhplu.hhpluscleanarch.lecture.domain;
 
 import com.hhplu.hhpluscleanarch.lecture.common.LectureStatus;
+import com.hhplu.hhpluscleanarch.lecture.controller.response.LectureResponse;
 import com.hhplu.hhpluscleanarch.lecture.exception.CapacityFullException;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "lecture")
+@NoArgsConstructor
 public class Lecture {
 
     private static final int MAX_CAPACITY = 30;
@@ -46,4 +49,13 @@ public class Lecture {
         this.capacity++;
     }
 
+    public LectureResponse toLectureResponse() {
+        return new LectureResponse(
+                this.id,
+                this.title,
+                this.lecturerName,
+                this.capacity,
+                this.lectureStatus
+        );
+    }
 }
