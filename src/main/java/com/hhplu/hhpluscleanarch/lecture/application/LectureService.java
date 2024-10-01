@@ -1,5 +1,6 @@
 package com.hhplu.hhpluscleanarch.lecture.application;
 
+import com.hhplu.hhpluscleanarch.lecture.common.LectureStatus;
 import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
 import com.hhplu.hhpluscleanarch.lecture.exception.LectureNotFoundException;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureRepository;
@@ -25,7 +26,7 @@ public class LectureService {
      */
     public ResponseEntity<List<LectureResponse>> getLectures() {
         // 강의 목록 조회
-        List<Lecture> lectures = lectureRepository.findAvailableLectures();
+        List<Lecture> lectures = lectureRepository.findByCapacityLessThanAndLectureStatus(30, LectureStatus.OPENED);
 
         if (lectures == null || lectures.isEmpty()) {
             throw new LectureNotFoundException("Lecture not found");

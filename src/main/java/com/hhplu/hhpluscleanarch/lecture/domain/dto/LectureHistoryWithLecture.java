@@ -1,4 +1,4 @@
-package com.hhplu.hhpluscleanarch.lecture.domain;
+package com.hhplu.hhpluscleanarch.lecture.domain.dto;
 
 import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
 import lombok.AllArgsConstructor;

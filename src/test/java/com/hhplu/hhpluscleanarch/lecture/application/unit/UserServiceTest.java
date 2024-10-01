@@ -2,7 +2,7 @@ package com.hhplu.hhpluscleanarch.lecture.application.unit;
 
 import com.hhplu.hhpluscleanarch.lecture.application.UserService;
 import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
-import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistoryWithLecture;
+import com.hhplu.hhpluscleanarch.lecture.domain.dto.LectureHistoryWithLecture;
 import com.hhplu.hhpluscleanarch.lecture.exception.LectureHistoryNotFoundException;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserHistoryResponse;
