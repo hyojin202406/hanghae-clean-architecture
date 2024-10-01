@@ -20,7 +20,8 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +76,7 @@ class LectureHistoryServiceTest {
     }
 
     @Test
-    void testApplyLectureFull() {
+    void 수강인원이_가득찼을때_특강신청_실패() {
         // Given
         Long userId = 1L;
         Long lectureId = 1L;
@@ -85,19 +86,21 @@ class LectureHistoryServiceTest {
 
         Lecture lecture = new Lecture();
         lecture.setId(lectureId);
+        lecture.setCapacity(30);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(lectureRepository.findById(lectureId)).thenReturn(Optional.of(lecture));
-        when(lectureHistoryRepository.countByLectureIdAndHistoryStatus(lectureId, HistoryStatus.SUCCESS)).thenReturn(30L);
 
         LectureRequest request = new LectureRequest(userId, lectureId);
 
         // When
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            lectureHistoryService.apply(request);
-        });
+        ResponseEntity<ApplyResponse> response = lectureHistoryService.apply(request);
 
         // Then
-        assertEquals("특강은 선착순 30명만 신청 가능합니다.", exception.getMessage());
+        assertNotNull(response);
+        assertEquals(lectureId, response.getBody().getLectureId());
+        assertEquals(userId, response.getBody().getUserId());
+        assertEquals(HistoryStatus.FAIL, response.getBody().getStatus());
     }
+
 }
