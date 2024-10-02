@@ -2,7 +2,6 @@ package com.hhplu.hhpluscleanarch.lecture.application;
 
 import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
-import com.hhplu.hhpluscleanarch.lecture.controller.response.ApplyResponse;
 import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.exception.CapacityFullException;
@@ -10,8 +9,9 @@ import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureRepository;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class LectureHistoryService {
@@ -49,10 +49,14 @@ public class LectureHistoryService {
                 .orElseThrow(() -> new IllegalArgumentException("특강을 찾을 수 없습니다."));
 
         LectureHistory lectureHistory;
+
         try {
+            Optional<LectureHistory> existingHistory = lectureHistoryRepository.findByUserIdAndLectureId(userId, lectureId);
+            if (existingHistory.isPresent())
+                throw new IllegalArgumentException("이미 해당 특강에 신청한 사용자입니다.");
             lecture.addStudent();
             lectureHistory = LectureHistory.create(userId, lectureId, HistoryStatus.SUCCESS);
-        } catch (CapacityFullException e) {
+        } catch (CapacityFullException | IllegalArgumentException e) {
             lectureHistory = LectureHistory.create(userId, lectureId, HistoryStatus.FAIL);
         }
 
