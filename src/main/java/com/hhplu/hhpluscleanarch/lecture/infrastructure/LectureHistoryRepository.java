@@ -24,4 +24,6 @@ public interface LectureHistoryRepository extends JpaRepository<LectureHistory, 
 
 
     List<LectureHistory> findByUserId(long l);
+
+    List<LectureHistory> findByLectureId(long l);
 }

@@ -25,7 +25,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 class LectureHistoryServiceIntegrationTest {
 
@@ -90,7 +89,7 @@ class LectureHistoryServiceIntegrationTest {
         latch.await();
         executor.shutdown();
 
-        List<LectureHistory> lectureHistories = lectureHistoryRepository.findAll();
+        List<LectureHistory> lectureHistories = lectureHistoryRepository.findByLectureId(1L);
         long successCount = lectureHistories.stream()
                 .filter(history -> history.getHistoryStatus() == HistoryStatus.SUCCESS)
                 .count();
