@@ -4,8 +4,9 @@
 -- INSERT INTO users (user_id, password) VALUES ('user2', 'password2');
 --
 -- -- Lectures
-INSERT INTO lecture (title, lecture_name, capacity, lecture_at, lecture_status) VALUES ('lecturer1', '강사 1', 0, NOW(), 'OPENED');
-INSERT INTO lecture (title, lecture_name, capacity, lecture_at, lecture_status) VALUES ('lecturer2', '강사 2', 15, NOW(), 'OPENED');
+INSERT INTO lecture (id, title, lecture_name, capacity, lecture_at, lecture_status) VALUES (1L, 'lecturer1', '강사 1', 0, NOW(), 'OPENED');
+INSERT INTO lecture (id, title, lecture_name, capacity, lecture_at, lecture_status) VALUES (2l, 'lecturer2', '강사 2', 15, NOW(), 'OPENED');
+INSERT INTO lecture (id, title, lecture_name, capacity, lecture_at, lecture_status) VALUES (3l, 'lecturer3', '강사 3', 0, NOW(), 'OPENED');
 
 -- Lecture_history
 -- INSERT INTO lecture_history (user_id, lecture_id, applied_at, history_status)
@@ -61,3 +62,5 @@ INSERT INTO users (id, user_id, password) VALUES (47, 'user47', 'password');
 INSERT INTO users (id, user_id, password) VALUES (48, 'user48', 'password');
 INSERT INTO users (id, user_id, password) VALUES (49, 'user49', 'password');
 INSERT INTO users (id, user_id, password) VALUES (50, 'user50', 'password');
+INSERT INTO users (id, user_id, password) VALUES (9998, '9998', 'password');
+INSERT INTO users (id, user_id, password) VALUES (9999, '9999', 'password');

@@ -5,7 +5,6 @@ import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.domain.User;
-import com.hhplu.hhpluscleanarch.lecture.domain.dto.LectureHistoryWithLecture;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
@@ -58,7 +57,7 @@ class LectureHistoryServiceIntegrationTest {
     @Test
     void 특강_신청_성공() {
         // Given
-        LectureRequest request = new LectureRequest(1L, 1L);
+        LectureRequest request = new LectureRequest(2L, 9998L);
 
         // When
         LectureHistory lectureHistory = lectureHistoryService.apply(request);
@@ -112,7 +111,7 @@ class LectureHistoryServiceIntegrationTest {
         for (int i = 0; i < 5; i++) {
             executor.submit(() -> {
                 try {
-                    LectureRequest request = new LectureRequest(1L, 1L);
+                    LectureRequest request = new LectureRequest(3L, 9999L);
                     lectureHistoryService.apply(request);
                 } catch (Exception e) {
                     // 예외 처리 (선택적)
@@ -126,7 +125,7 @@ class LectureHistoryServiceIntegrationTest {
         executor.shutdown(); // 스레드 풀 종료
 
         // 최종적으로 신청 기록 검증
-        List<LectureHistoryWithLecture> lectureHistories = lectureHistoryRepository.findCompletedLecturesByUserId(1L);
+        List<LectureHistory> lectureHistories = lectureHistoryRepository.findByUserId(9999L);
         long successCount = lectureHistories.stream()
                 .filter(history -> history.getHistoryStatus() == HistoryStatus.SUCCESS)
                 .count();
