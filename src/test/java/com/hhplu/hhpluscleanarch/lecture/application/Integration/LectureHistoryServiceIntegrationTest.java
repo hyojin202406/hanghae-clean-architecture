@@ -1,24 +1,28 @@
 package com.hhplu.hhpluscleanarch.lecture.application.Integration;
 
 import com.hhplu.hhpluscleanarch.lecture.application.LectureHistoryService;
+import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
-import com.hhplu.hhpluscleanarch.lecture.controller.response.ApplyResponse;
-import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.domain.User;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository;
-import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureRepository;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,18 +30,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class LectureHistoryServiceIntegrationTest {
 
     @Autowired
-    private LectureHistoryRepository lectureHistoryRepository;
+    private LectureHistoryService lectureHistoryService;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private LectureRepository lectureRepository;
+    private LectureHistoryRepository lectureHistoryRepository;
 
-    private Lecture lecture;
+    private List<User> users;
 
-    @Autowired
-    LectureHistoryService lectureHistoryService;
+    @BeforeEach
+    public void setUp() {
+        // 사용자 40명 생성
+        users = IntStream.rangeClosed(1, 50)
+                .mapToObj(i -> {
+                    User user = new User();
+                    user.setId(Long.valueOf(i));
+                    user.setUserId("user" + i);
+                    user.setPassword("password");
+                    return userRepository.save(user);
+                })
+                .collect(Collectors.toList());
+    }
 
     @Test
     void 특강_신청_성공() {
@@ -52,37 +67,29 @@ class LectureHistoryServiceIntegrationTest {
     }
 
     @Test
-    public void testApplyConcurrently() throws InterruptedException {
-//        // Test user 생성
-//        User testUser = new User("testUser", "password");
-//        userRepository.save(testUser);
-//
-//        // Test lecture 생성
-//        Lecture lecture = new Lecture("Test Lecture", "Test Lecturer", 30);
-//        lectureRepository.save(lecture);
-
-        Long userId = testUser.getId(); // Test user ID
-        Long lectureId = lecture.getId(); // Test lecture ID
+    public void 동시에_40명_수강신청_시_30명만_수강신청_성공() throws InterruptedException {
 
         ExecutorService executor = Executors.newFixedThreadPool(40);
         CountDownLatch latch = new CountDownLatch(40);
 
+        // When
         for (int i = 0; i < 40; i++) {
+            final int userIndex = i;
             executor.submit(() -> {
                 try {
-                    LectureRequest request = new LectureRequest(userId, lectureId);
-                    lectureHistoryService.apply(request);
+                    Long id = users.get(userIndex).getId();
+                    lectureHistoryService.apply(new LectureRequest(1L, id));
                 } catch (Exception e) {
-                    // 예외 처리 (선택적)
+                    e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }
             });
         }
 
-        latch.await(); // 모든 스레드가 작업을 마칠 때까지 대기
+        latch.await();
+        executor.shutdown();
 
-        // 최종적으로 신청 기록 검증
         List<LectureHistory> lectureHistories = lectureHistoryRepository.findAll();
         long successCount = lectureHistories.stream()
                 .filter(history -> history.getHistoryStatus() == HistoryStatus.SUCCESS)
@@ -91,7 +98,9 @@ class LectureHistoryServiceIntegrationTest {
                 .filter(history -> history.getHistoryStatus() == HistoryStatus.FAIL)
                 .count();
 
-        assertThat(successCount).isEqualTo(30); // 성공한 신청
-        assertThat(failCount).isEqualTo(10); // 실패한 신청
+        // Then
+        assertThat(successCount).isEqualTo(30); // 성공한 신청이 30명인지 확인
+        assertThat(failCount).isEqualTo(10); // 실패한 신청이 10명인지 확인
     }
+
 }
