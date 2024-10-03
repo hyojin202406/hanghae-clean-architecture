@@ -59,9 +59,8 @@ public class LectureHistoryService {
             lectureHistory = LectureHistory.create(userId, lectureId, HistoryStatus.SUCCESS);
         } catch (CapacityFullException | LectureAlreadyAppliedException e) {
             lectureHistory = LectureHistory.create(userId, lectureId, HistoryStatus.FAIL);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
         // 신청 기록 저장
         lectureHistoryRepository.save(lectureHistory);
 

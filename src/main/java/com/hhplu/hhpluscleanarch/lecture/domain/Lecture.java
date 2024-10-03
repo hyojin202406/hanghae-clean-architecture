@@ -46,7 +46,12 @@ public class Lecture {
         if (isCapacityFull()) {
             throw new CapacityFullException("수강 인원이 가득 찼습니다.");
         }
+
         this.capacity++;
+
+        if (capacity == MAX_CAPACITY) {
+            this.lectureStatus = LectureStatus.CLOSED;
+        }
     }
 
     public LectureResponse toLectureResponse() {
@@ -55,7 +60,8 @@ public class Lecture {
                 this.title,
                 this.lecturerName,
                 this.capacity,
-                this.lectureStatus
+                this.lectureStatus,
+                this.createdAt
         );
     }
 }
