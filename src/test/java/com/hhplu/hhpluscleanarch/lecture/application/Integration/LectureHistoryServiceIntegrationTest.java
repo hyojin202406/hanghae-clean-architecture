@@ -6,12 +6,10 @@ import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.domain.User;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository;
-import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -32,9 +30,6 @@ class LectureHistoryServiceIntegrationTest {
     private LectureHistoryService lectureHistoryService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private LectureHistoryRepository lectureHistoryRepository;
 
     private List<User> users;
@@ -48,7 +43,7 @@ class LectureHistoryServiceIntegrationTest {
                     user.setId(Long.valueOf(i));
                     user.setUserId("user" + i);
                     user.setPassword("password");
-                    return userRepository.save(user);
+                    return user;
                 })
                 .collect(Collectors.toList());
     }
@@ -110,7 +105,7 @@ class LectureHistoryServiceIntegrationTest {
         for (int i = 0; i < 5; i++) {
             executor.submit(() -> {
                 try {
-                    LectureRequest request = new LectureRequest(3L, 9999L);
+                    LectureRequest request = new LectureRequest(4L, 9999L);
                     lectureHistoryService.apply(request);
                 } catch (Exception e) {
                     // 예외 처리 (선택적)
