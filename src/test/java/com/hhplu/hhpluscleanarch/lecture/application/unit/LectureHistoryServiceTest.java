@@ -3,7 +3,6 @@ package com.hhplu.hhpluscleanarch.lecture.application.unit;
 import com.hhplu.hhpluscleanarch.lecture.application.LectureHistoryService;
 import com.hhplu.hhpluscleanarch.lecture.common.HistoryStatus;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
-import com.hhplu.hhpluscleanarch.lecture.controller.response.ApplyResponse;
 import com.hhplu.hhpluscleanarch.lecture.domain.Lecture;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.domain.User;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

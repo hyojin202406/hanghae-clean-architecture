@@ -6,12 +6,10 @@ import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.domain.LectureHistory;
 import com.hhplu.hhpluscleanarch.lecture.domain.User;
 import com.hhplu.hhpluscleanarch.lecture.infrastructure.LectureHistoryRepository;
-import com.hhplu.hhpluscleanarch.lecture.infrastructure.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -25,15 +23,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 class LectureHistoryServiceIntegrationTest {
 
     @Autowired
     private LectureHistoryService lectureHistoryService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private LectureHistoryRepository lectureHistoryRepository;
@@ -49,7 +43,7 @@ class LectureHistoryServiceIntegrationTest {
                     user.setId(Long.valueOf(i));
                     user.setUserId("user" + i);
                     user.setPassword("password");
-                    return userRepository.save(user);
+                    return user;
                 })
                 .collect(Collectors.toList());
     }
@@ -57,7 +51,7 @@ class LectureHistoryServiceIntegrationTest {
     @Test
     void 특강_신청_성공() {
         // Given
-        LectureRequest request = new LectureRequest(1L, 1L);
+        LectureRequest request = new LectureRequest(2L, 9998L);
 
         // When
         LectureHistory lectureHistory = lectureHistoryService.apply(request);
@@ -90,7 +84,7 @@ class LectureHistoryServiceIntegrationTest {
         latch.await();
         executor.shutdown();
 
-        List<LectureHistory> lectureHistories = lectureHistoryRepository.findAll();
+        List<LectureHistory> lectureHistories = lectureHistoryRepository.findByLectureId(1L);
         long successCount = lectureHistories.stream()
                 .filter(history -> history.getHistoryStatus() == HistoryStatus.SUCCESS)
                 .count();
@@ -101,6 +95,42 @@ class LectureHistoryServiceIntegrationTest {
         // Then
         assertThat(successCount).isEqualTo(30); // 성공한 신청이 30명인지 확인
         assertThat(failCount).isEqualTo(10); // 실패한 신청이 10명인지 확인
+    }
+
+    @Test
+    public void 동일한_유저가_같은_특강을_5번_신청했을때_1번만_성공하는지_검증() throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        CountDownLatch latch = new CountDownLatch(5);
+
+        for (int i = 0; i < 5; i++) {
+            executor.submit(() -> {
+                try {
+                    LectureRequest request = new LectureRequest(4L, 9999L);
+                    lectureHistoryService.apply(request);
+                } catch (Exception e) {
+                    // 예외 처리 (선택적)
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await(); // 모든 스레드가 작업을 마칠 때까지 대기
+        executor.shutdown(); // 스레드 풀 종료
+
+        // 최종적으로 신청 기록 검증
+        List<LectureHistory> lectureHistories = lectureHistoryRepository.findByUserId(9999L);
+        long successCount = lectureHistories.stream()
+                .filter(history -> history.getHistoryStatus() == HistoryStatus.SUCCESS)
+                .count();
+
+        long failCount = lectureHistories.stream()
+                .filter(history -> history.getHistoryStatus() == HistoryStatus.FAIL)
+                .count();
+
+        assertThat(successCount).isEqualTo(1); // 성공한 신청
+
+        assertThat(failCount).isEqualTo(4); // 실패한 신청
     }
 
 }

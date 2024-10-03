@@ -22,7 +22,7 @@ class UserServiceIntegrationTest {
     @Test
     void 특강_신청_완료_목록_조회_성공() {
         // Given
-        Long userId = 1L;
+        Long userId = 9997L;
 
         // When
         List<LectureHistoryWithLecture> applyStatus = userService.getApplyStatus(userId);

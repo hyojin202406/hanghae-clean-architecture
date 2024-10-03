@@ -3,6 +3,7 @@ package com.hhplu.hhpluscleanarch.lecture.controller.api;
 import com.hhplu.hhpluscleanarch.lecture.application.LectureHistoryService;
 import com.hhplu.hhpluscleanarch.lecture.application.LectureService;
 import com.hhplu.hhpluscleanarch.lecture.application.UserService;
+import com.hhplu.hhpluscleanarch.lecture.controller.request.ChoiceLectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.controller.request.LectureRequest;
 import com.hhplu.hhpluscleanarch.lecture.controller.response.ApplyResponse;
 import com.hhplu.hhpluscleanarch.lecture.controller.response.LectureResponse;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/lectures")
+@RequestMapping("/lecture")
 public class LectureController {
 
     private final LectureService lectureService;
@@ -52,9 +53,9 @@ public class LectureController {
      * - 특강의 정원은 30명으로 고정이며, 사용자는 각 특강에 신청하기전 목록을 조회해볼 수 있어야 합니다.
      * @return
      */
-    @GetMapping
-    public ResponseEntity<List<LectureResponse>> getLectures() {
-        List<Lecture> lectures = lectureService.getLectures();
+    @PostMapping
+    public ResponseEntity<List<LectureResponse>> getLectures(@RequestBody ChoiceLectureRequest request) {
+        List<Lecture> lectures = lectureService.getLectures(request);
 
         List<LectureResponse> lectureResponses = lectures.stream()
                 .map(Lecture::toLectureResponse)
